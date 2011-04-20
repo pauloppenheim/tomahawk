@@ -24,6 +24,7 @@
 #include "infoplugins/echonestplugin.h"
 #include "infoplugins/musixmatchplugin.h"
 #include "infoplugins/lastfmplugin.h"
+#include "audio/audioengine.h"
 
 namespace Tomahawk
 {
@@ -71,19 +72,35 @@ InfoSystem::instance()
 InfoSystem::InfoSystem(QObject *parent)
     : QObject(parent)
 {
+    /** Store singleton */
     s_instance = this;
 
+    /** Register Metatypes */
     qDebug() << Q_FUNC_INFO;
     qRegisterMetaType< QMap< QString, QMap< QString, QString > > >( "Tomahawk::InfoSystem::InfoGenericMap" );
     qRegisterMetaType< QHash< QString, QVariant > >( "Tomahawk::InfoSystem::InfoCustomData" );
     qRegisterMetaType< QHash< QString, QString > >( "Tomahawk::InfoSystem::InfoCriteriaHash" );
     qRegisterMetaType< Tomahawk::InfoSystem::InfoType >( "Tomahawk::InfoSystem::InfoType" );
 
+    /** Create Cache */
     m_infoSystemCacheThreadController = new QThread( this );
     m_cache = new InfoSystemCache();
     m_cache->moveToThread( m_infoSystemCacheThreadController );
     m_infoSystemCacheThreadController->start( QThread::IdlePriority );
 
+    /** Connect to AudioEngine for playing state information */
+    connect( AudioEngine::instance(), SIGNAL( started( const Tomahawk::result_ptr& track ) ),
+	     SIGNAL( audioStarted( const Tomahawk::result_ptr& track ) ) );
+    connect( AudioEngine::instance(), SIGNAL( finished( const Tomahawk::result_ptr& track ) ),
+	     SIGNAL( audioFinished( const Tomahawk::result_ptr& track ) ) );
+    connect( AudioEngine::instance(), SIGNAL( stopped( const Tomahawk::result_ptr& track ) ),
+	     SIGNAL( audioStopped() ) );
+    connect( AudioEngine::instance(), SIGNAL( paused( const Tomahawk::result_ptr& track ) ),
+	     SIGNAL( audioPaused() ) );
+    connect( AudioEngine::instance(), SIGNAL( resumed( const Tomahawk::result_ptr& track ) ),
+	     SIGNAL( audioResumed() ) );
+
+    /** Build InfoPlugins */
     InfoPluginPtr enptr( new EchoNestPlugin( this ) );
     m_plugins.append( enptr );
     InfoPluginPtr mmptr( new MusixMatchPlugin( this ) );
@@ -91,6 +108,7 @@ InfoSystem::InfoSystem(QObject *parent)
     InfoPluginPtr lfmptr( new LastFmPlugin( this ) );
     m_plugins.append( lfmptr );
 
+    /** Connect InfoPlugins to InfoSystem */
     Q_FOREACH( InfoPluginPtr plugin, m_plugins )
     {
         connect(
@@ -101,6 +119,8 @@ InfoSystem::InfoSystem(QObject *parent)
                 Qt::UniqueConnection
             );
     }
+
+    /** Connect Cache to InfoSystem */
     connect( m_cache, SIGNAL( info( QString, Tomahawk::InfoSystem::InfoType, QVariant, QVariant, Tomahawk::InfoSystem::InfoCustomData ) ),
             this,       SLOT( infoSlot( QString, Tomahawk::InfoSystem::InfoType, QVariant, QVariant, Tomahawk::InfoSystem::InfoCustomData ) ), Qt::UniqueConnection );
 }

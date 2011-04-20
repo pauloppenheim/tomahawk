@@ -30,6 +30,7 @@
 #include <QtCore/QThread>
 
 #include "dllmacro.h"
+#include "typedefs.h"
 
 namespace Tomahawk {
 
@@ -156,6 +157,13 @@ public:
 signals:
     void info( QString caller, Tomahawk::InfoSystem::InfoType, QVariant input, QVariant output, Tomahawk::InfoSystem::InfoCustomData customData );
     void finished( QString target );
+
+    /** Signals from AudioEngine */
+    void audioStarted( const Tomahawk::result_ptr& track );
+    void audioFinished( const Tomahawk::result_ptr& track );
+    void audioStopped();
+    void audioPaused();
+    void audioResumed();
 
 public slots:
     void infoSlot( QString target, Tomahawk::InfoSystem::InfoType type, QVariant input, QVariant output, Tomahawk::InfoSystem::InfoCustomData customData );
