@@ -21,6 +21,7 @@
 #include "infosystem.h"
 #include "utils/tomahawkutils.h"
 #include "infosystemcache.h"
+#include "infoplugins/adiumplugin.h"
 #include "infoplugins/echonestplugin.h"
 #include "infoplugins/musixmatchplugin.h"
 #include "infoplugins/lastfmplugin.h"
@@ -101,6 +102,8 @@ InfoSystem::InfoSystem(QObject *parent)
 	     SIGNAL( audioResumed() ) );
 
     /** Build InfoPlugins */
+    InfoPluginPtr adiumptr( new AdiumPlugin( this ) );
+    m_plugins.append( adiumptr );
     InfoPluginPtr enptr( new EchoNestPlugin( this ) );
     m_plugins.append( enptr );
     InfoPluginPtr mmptr( new MusixMatchPlugin( this ) );

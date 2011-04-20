@@ -23,9 +23,27 @@ using namespace Tomahawk::InfoSystem;
 AdiumPlugin::AdiumPlugin(QObject *parent)
     : InfoPlugin(parent)
 {
+    /** No supported types since the plugin pushes info, doesn't get any */
     qDebug() << Q_FUNC_INFO;
     QSet< InfoType > supportedTypes;
-    qobject_cast< InfoSystem* >(parent)->registerInfoTypes(this, supportedTypes);
+    InfoSystem *system = qobject_cast< InfoSystem* >(parent);
+    system->registerInfoTypes(this, supportedTypes);
+
+    /** Connect to audio state signals.
+	TODO: Move this into InfoSystem? There could end up being many plugins
+	connected to audio state signals. */
+
+    connect( system, SIGNAL( audioStarted( const Tomahawk::result_ptr& track ) ),
+	     SLOT( audioStarted( const Tomahawk::result_ptr& track ) ) );
+    connect( system, SIGNAL( audioFinished( const Tomahawk::result_ptr& track ) ),
+	     SLOT( audioFinished( const Tomahawk::result_ptr& track ) ) );
+    connect( system, SIGNAL( audioStopped( const Tomahawk::result_ptr& track ) ),
+	     SLOT( audioStopped() ) );
+    connect( system, SIGNAL( audioPaused( const Tomahawk::result_ptr& track ) ),
+	     SLOT( audioPaused() ) );
+    connect( system, SIGNAL( audioResumed( const Tomahawk::result_ptr& track ) ),
+	     SLOT( audioResumed() ) );
+    
 }
 
 AdiumPlugin::~AdiumPlugin()
@@ -43,4 +61,35 @@ void AdiumPlugin::getInfo(const QString &caller, const InfoType type, const QVar
             return;
         }
     }
+}
+
+/** Audio state slots */
+
+void AdiumPlugin::audioStarted( const Tomahawk::result_ptr& track )
+{
+    qDebug() << Q_FUNC_INFO;
+    // TODO: audio started, so push update status to Adium with playing track
+}
+
+void AdiumPlugin::audioFinished( const Tomahawk::result_ptr& track )
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void AdiumPlugin::audioStopped()
+{
+    qDebug() << Q_FUNC_INFO;
+    // TODO: audio stopped, so push update status to Adium that says "stopped"
+}
+
+void AdiumPlugin::audioPaused()
+{
+    qDebug() << Q_FUNC_INFO;
+    // TODO: audio paused, so push update status to Adium that says "paused"
+}
+
+void AdiumPlugin::audioResumed()
+{
+    qDebug() << Q_FUNC_INFO;
+    // TODO: audio resumed, so push update status to Adium with playing track
 }

@@ -237,6 +237,7 @@ set( libHeaders
 
     infosystem/infosystem.h
     infosystem/infosystemcache.h
+    infosystem/infoplugins/adiumplugin.h
     infosystem/infoplugins/echonestplugin.h
     infosystem/infoplugins/lastfmplugin.h
     infosystem/infoplugins/musixmatchplugin.h

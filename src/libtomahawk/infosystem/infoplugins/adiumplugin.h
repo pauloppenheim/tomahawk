@@ -35,7 +35,14 @@ public:
     AdiumPlugin( QObject *parent );
     virtual ~AdiumPlugin();
 
-    void getInfo( const QString &caller, const InfoType type, const QVariant &data, InfoCustomData customData ) = 0;
+    void getInfo( const QString &caller, const InfoType type, const QVariant &data, InfoCustomData customData );
+
+public slots:
+    void audioStarted( const Tomahawk::result_ptr& track );
+    void audioFinished( const Tomahawk::result_ptr& track );
+    void audioStopped();
+    void audioPaused();
+    void audioResumed();    
 
 };
 
