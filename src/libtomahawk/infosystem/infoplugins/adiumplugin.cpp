@@ -33,15 +33,15 @@ AdiumPlugin::AdiumPlugin(QObject *parent)
 	TODO: Move this into InfoSystem? There could end up being many plugins
 	connected to audio state signals. */
 
-    connect( system, SIGNAL( audioStarted( const Tomahawk::result_ptr& track ) ),
-	     SLOT( audioStarted( const Tomahawk::result_ptr& track ) ) );
-    connect( system, SIGNAL( audioFinished( const Tomahawk::result_ptr& track ) ),
-	     SLOT( audioFinished( const Tomahawk::result_ptr& track ) ) );
-    connect( system, SIGNAL( audioStopped( const Tomahawk::result_ptr& track ) ),
+    connect( system, SIGNAL( audioStarted( const Tomahawk::result_ptr& ) ),
+	     SLOT( audioStarted( const Tomahawk::result_ptr& ) ) );
+    connect( system, SIGNAL( audioFinished( const Tomahawk::result_ptr& ) ),
+	     SLOT( audioFinished( const Tomahawk::result_ptr& ) ) );
+    connect( system, SIGNAL( audioStopped() ),
 	     SLOT( audioStopped() ) );
-    connect( system, SIGNAL( audioPaused( const Tomahawk::result_ptr& track ) ),
+    connect( system, SIGNAL( audioPaused() ),
 	     SLOT( audioPaused() ) );
-    connect( system, SIGNAL( audioResumed( const Tomahawk::result_ptr& track ) ),
+    connect( system, SIGNAL( audioResumed() ),
 	     SLOT( audioResumed() ) );
     
 }
@@ -93,3 +93,4 @@ void AdiumPlugin::audioResumed()
     qDebug() << Q_FUNC_INFO;
     // TODO: audio resumed, so push update status to Adium with playing track
 }
+

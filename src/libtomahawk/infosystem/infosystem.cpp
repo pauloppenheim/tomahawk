@@ -90,15 +90,15 @@ InfoSystem::InfoSystem(QObject *parent)
     m_infoSystemCacheThreadController->start( QThread::IdlePriority );
 
     /** Connect to AudioEngine for playing state information */
-    connect( AudioEngine::instance(), SIGNAL( started( const Tomahawk::result_ptr& track ) ),
-	     SIGNAL( audioStarted( const Tomahawk::result_ptr& track ) ) );
-    connect( AudioEngine::instance(), SIGNAL( finished( const Tomahawk::result_ptr& track ) ),
-	     SIGNAL( audioFinished( const Tomahawk::result_ptr& track ) ) );
-    connect( AudioEngine::instance(), SIGNAL( stopped( const Tomahawk::result_ptr& track ) ),
+    connect( AudioEngine::instance(), SIGNAL( started( const Tomahawk::result_ptr& ) ),
+	     SIGNAL( audioStarted( const Tomahawk::result_ptr& ) ) );
+    connect( AudioEngine::instance(), SIGNAL( finished( const Tomahawk::result_ptr& ) ),
+	     SIGNAL( audioFinished( const Tomahawk::result_ptr& ) ) );
+    connect( AudioEngine::instance(), SIGNAL( stopped() ),
 	     SIGNAL( audioStopped() ) );
-    connect( AudioEngine::instance(), SIGNAL( paused( const Tomahawk::result_ptr& track ) ),
+    connect( AudioEngine::instance(), SIGNAL( paused() ),
 	     SIGNAL( audioPaused() ) );
-    connect( AudioEngine::instance(), SIGNAL( resumed( const Tomahawk::result_ptr& track ) ),
+    connect( AudioEngine::instance(), SIGNAL( resumed() ),
 	     SIGNAL( audioResumed() ) );
 
     /** Build InfoPlugins */
