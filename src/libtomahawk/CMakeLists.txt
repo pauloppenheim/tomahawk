@@ -383,13 +383,20 @@ IF( WIN32 )
 ENDIF( WIN32 )
 
 IF( APPLE )
-    FIND_LIBRARY(CARBON_LIBRARY Carbon)
     FIND_LIBRARY( COREAUDIO_LIBRARY CoreAudio )
     FIND_LIBRARY( COREFOUNDATION_LIBRARY CoreFoundation )
-    MARK_AS_ADVANCED( CARBON_LIBRARY COREAUDIO_LIBRARY COREFOUNDATION_LIBRARY )
+    FIND_LIBRARY( FOUNDATION_LIBRARY Foundation )
+    FIND_LIBRARY( SCRIPTINGBRIDGE_LIBRARY ScriptingBridge )
+    MARK_AS_ADVANCED( COREAUDIO_LIBRARY COREFOUNDATION_LIBRARY FOUNDATION_LIBRARY SCRIPTINGBRIDGE_LIBRARY )
 
-    SET( libSources ${libSources} infosystem/infoplugins/adiumplugin.cpp audio/rtaudiooutput.cpp )
-    SET( libHeaders ${libHeaders} infosystem/infoplugins/adiumplugin.h audio/rtaudiooutput.h )
+    SET( libSources ${libSources} 
+      infosystem/infoplugins/adium.mm
+      infosystem/infoplugins/adiumplugin.cpp 
+      audio/rtaudiooutput.cpp )
+    SET( libHeaders ${libHeaders} 
+      infosystem/infoplugins/adium.h
+      infosystem/infoplugins/adiumplugin.h 
+      audio/rtaudiooutput.h )
 
     SET( OS_SPECIFIC_LINK_LIBRARIES
         ${OS_SPECIFIC_LINK_LIBRARIES}
@@ -397,9 +404,10 @@ IF( APPLE )
 	${QJSON_LIBRARIES}
         rtaudio
         # System
-	${CARBON_LIBRARY}
         ${COREAUDIO_LIBRARY}
         ${COREFOUNDATION_LIBRARY}
+	${FOUNDATION_LIBRARY}
+	${SCRIPTINGBRIDGE_LIBRARY}
     )
 ENDIF( APPLE )
 
