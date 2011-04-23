@@ -80,7 +80,6 @@ set( libSources
 
     infosystem/infosystemcache.cpp
     infosystem/infosystem.cpp
-    infosystem/infoplugins/adiumplugin.cpp
     infosystem/infoplugins/echonestplugin.cpp
     infosystem/infoplugins/lastfmplugin.cpp
     infosystem/infoplugins/musixmatchplugin.cpp
@@ -239,7 +238,6 @@ set( libHeaders
 
     infosystem/infosystem.h
     infosystem/infosystemcache.h
-    infosystem/infoplugins/adiumplugin.h
     infosystem/infoplugins/echonestplugin.h
     infosystem/infoplugins/lastfmplugin.h
     infosystem/infoplugins/musixmatchplugin.h
@@ -385,12 +383,13 @@ IF( WIN32 )
 ENDIF( WIN32 )
 
 IF( APPLE )
+    FIND_LIBRARY(CARBON_LIBRARY Carbon)
     FIND_LIBRARY( COREAUDIO_LIBRARY CoreAudio )
     FIND_LIBRARY( COREFOUNDATION_LIBRARY CoreFoundation )
-    MARK_AS_ADVANCED( COREAUDIO_LIBRARY COREFOUNDATION_LIBRARY )
+    MARK_AS_ADVANCED( CARBON_LIBRARY COREAUDIO_LIBRARY COREFOUNDATION_LIBRARY )
 
-    SET( libSources ${libSources} audio/rtaudiooutput.cpp )
-    SET( libHeaders ${libHeaders} audio/rtaudiooutput.h )
+    SET( libSources ${libSources} infosystem/infoplugins/adiumplugin.cpp audio/rtaudiooutput.cpp )
+    SET( libHeaders ${libHeaders} infosystem/infoplugins/adiumplugin.h audio/rtaudiooutput.h )
 
     SET( OS_SPECIFIC_LINK_LIBRARIES
         ${OS_SPECIFIC_LINK_LIBRARIES}
@@ -398,6 +397,7 @@ IF( APPLE )
 	${QJSON_LIBRARIES}
         rtaudio
         # System
+	${CARBON_LIBRARY}
         ${COREAUDIO_LIBRARY}
         ${COREFOUNDATION_LIBRARY}
     )
