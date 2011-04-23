@@ -30,15 +30,10 @@ static void setStatus(const QString &status)
   adiumStatus.append("set the status message of every account to \"Tomahawk: ");
   adiumStatus.append(status);
   adiumStatus.append("\"\nend tell\n");
-  qDebug() << "status: " << status;
-  qDebug() << "Adium Status: " << adiumStatus;
   const char* scriptstr = adiumStatus.toUtf8();
-  //  const char* scriptstr = adiumStatus.utf16();
-  //  const char* scriptstr = adiumStatus.toStdString().c_str();
   script( scriptstr );
 
 }
-
 
 using namespace Tomahawk::InfoSystem;
 
@@ -99,20 +94,21 @@ void AdiumPlugin::audioStarted( const Tomahawk::result_ptr& track )
 
 void AdiumPlugin::audioFinished( const Tomahawk::result_ptr& track )
 {
-    qDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 }
 
 void AdiumPlugin::audioStopped()
 {
     qDebug() << Q_FUNC_INFO;
     // TODO: audio stopped, so push update status to Adium that says "stopped"
+    setStatus( "Stopped" );
 }
 
 void AdiumPlugin::audioPaused()
 {
     qDebug() << Q_FUNC_INFO;
     // TODO: audio paused, so push update status to Adium that says "paused"
-    setStatus( "paused" );
+    setStatus( "Paused" );
 }
 
 void AdiumPlugin::audioResumed()
