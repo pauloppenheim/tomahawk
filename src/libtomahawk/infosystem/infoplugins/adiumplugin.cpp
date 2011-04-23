@@ -66,6 +66,7 @@ AdiumPlugin::AdiumPlugin(QObject *parent)
 AdiumPlugin::~AdiumPlugin()
 {
     qDebug() << Q_FUNC_INFO;
+    setStatus( "" );
 }
 
 void AdiumPlugin::getInfo(const QString &caller, const InfoType type, const QVariant& data, InfoCustomData customData)
