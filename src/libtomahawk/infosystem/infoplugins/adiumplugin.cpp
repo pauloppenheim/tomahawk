@@ -27,7 +27,7 @@
 static void setStatus(const QString &status)
 {
   QString adiumStatus = "tell application \"Adium\"\n";
-  adiumStatus.append("set the status message of every account to \"Tomahawk: ");
+  adiumStatus.append("set the status message of every account to \"");
   adiumStatus.append(status);
   adiumStatus.append("\"\nend tell\n");
   const char* scriptstr = adiumStatus.toUtf8();
