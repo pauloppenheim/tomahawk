@@ -98,8 +98,9 @@ InfoSystem::InfoSystem(QObject *parent)
 	     SIGNAL( audioStopped() ) );
     connect( AudioEngine::instance(), SIGNAL( paused() ),
 	     SIGNAL( audioPaused() ) );
-    connect( AudioEngine::instance(), SIGNAL( resumed() ),
-	     SIGNAL( audioResumed() ) );
+    connect( AudioEngine::instance(), SIGNAL( resumed( const Tomahawk::result_ptr& ) ),
+	     SIGNAL( audioResumed( const Tomahawk::result_ptr& ) ) );
+
 
     /** Build InfoPlugins */
     InfoPluginPtr adiumptr( new AdiumPlugin( this ) );

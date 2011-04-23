@@ -102,7 +102,7 @@ AudioEngine::play()
     {
         QMutexLocker lock( &m_mutex );
         m_audio->resume();
-        emit resumed();
+        emit resumed( m_currentTrack );
     }
     else
         loadNextTrack();

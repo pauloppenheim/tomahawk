@@ -85,7 +85,7 @@ signals:
     void finished( const Tomahawk::result_ptr& track );
     void stopped();
     void paused();
-    void resumed();
+    void resumed( const Tomahawk::result_ptr& track );
 
     void volumeChanged( int volume /* in percent */ );
 

@@ -47,7 +47,7 @@ Scrobbler::Scrobbler( QObject* parent )
     connect( AudioEngine::instance(), SIGNAL( paused() ),
              SLOT( trackPaused() ), Qt::QueuedConnection );
 
-    connect( AudioEngine::instance(), SIGNAL( resumed() ),
+    connect( AudioEngine::instance(), SIGNAL( resumed( const Tomahawk::result_ptr&) ),
              SLOT( trackResumed() ), Qt::QueuedConnection );
 
     connect( AudioEngine::instance(), SIGNAL( stopped() ),

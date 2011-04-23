@@ -58,8 +58,8 @@ AdiumPlugin::AdiumPlugin(QObject *parent)
 	     SLOT( audioStopped() ) );
     connect( system, SIGNAL( audioPaused() ),
 	     SLOT( audioPaused() ) );
-    connect( system, SIGNAL( audioResumed() ),
-	     SLOT( audioResumed() ) );
+    connect( system, SIGNAL( audioResumed( const Tomahawk::result_ptr& ) ),
+	     SLOT( audioResumed( const Tomahawk::result_ptr& ) ) );
     
 }
 
@@ -111,9 +111,10 @@ void AdiumPlugin::audioPaused()
     setStatus( "Paused" );
 }
 
-void AdiumPlugin::audioResumed()
+void AdiumPlugin::audioResumed( const Tomahawk::result_ptr& track )
 {
     qDebug() << Q_FUNC_INFO;
     // TODO: audio resumed, so push update status to Adium with playing track
+    this->audioStarted( track );
 }
 

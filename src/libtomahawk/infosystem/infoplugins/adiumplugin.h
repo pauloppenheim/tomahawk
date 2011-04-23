@@ -42,7 +42,7 @@ public slots:
     void audioFinished( const Tomahawk::result_ptr& track );
     void audioStopped();
     void audioPaused();
-    void audioResumed();    
+    void audioResumed( const Tomahawk::result_ptr& track );    
 
 };
 
