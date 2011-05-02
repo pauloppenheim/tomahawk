@@ -23,6 +23,7 @@
 #include <lastfm/misc.h>
 #include <QCoreApplication>
 #include <QNetworkRequest>
+#include <QThread>
 #ifdef WIN32
 #include "win/IeSettings.h"
 #include "win/Pac.h"
@@ -85,11 +86,14 @@ lastfm::NetworkAccessManager::NetworkAccessManager( QObject* parent )
                , m_monitor( 0 )
             #endif
 {
+    qDebug() << Q_FUNC_INFO;
     // can't be done in above init, as applicationName() won't be set
+    qDebug() << "lastfm::NetworkAccessManager useragent = " << lastfm::UserAgent << " in thread " << QThread::currentThread();
     if (lastfm::UserAgent.isEmpty())
     {
         QByteArray name = QCoreApplication::applicationName().toUtf8();
         QByteArray version = QCoreApplication::applicationVersion().toUtf8();
+        qDebug() << "lastfm::NetworkAccessManager name = " << name << " and version = " << version << " in thread " << QThread::currentThread();
         if (version.size()) version.prepend( ' ' );
         lastfm::UserAgent = name + version + " (" + lastfm::platform() + ")";
     }
@@ -137,6 +141,8 @@ lastfm::NetworkAccessManager::createRequest( Operation op, const QNetworkRequest
     request.setAttribute( QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache );
     request.setRawHeader( "User-Agent", lastfm::UserAgent );
 
+    qDebug() << "lastfm::NetworkAccessManager creating request, with user agent " << lastfm::UserAgent;
+    
 #ifdef WIN32
     // PAC proxies can vary by domain, so we have to check everytime :(
     QNetworkProxy proxy = this->proxy( request );

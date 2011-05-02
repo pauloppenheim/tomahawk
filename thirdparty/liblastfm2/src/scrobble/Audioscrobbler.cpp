@@ -69,8 +69,10 @@ lastfm::Audioscrobbler::~Audioscrobbler()
 void
 lastfm::Audioscrobbler::nowPlaying( const Track& track )
 {
+    qDebug() << Q_FUNC_INFO;
     if ( d->m_nowPlayingReply.isNull())
     {
+        qDebug() << "nowPlaying reply was null";
         d->m_nowPlayingTrack = track;
         d->m_nowPlayingReply = track.updateNowPlaying();
         connect( d->m_nowPlayingReply, SIGNAL(finished()), SLOT(onNowPlayingReturn()));
@@ -151,6 +153,7 @@ lastfm::Audioscrobbler::parseTrack( const XmlQuery& trackXml, const Track& track
 void
 lastfm::Audioscrobbler::onNowPlayingReturn()
 {
+    qDebug() << Q_FUNC_INFO;
     lastfm::XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
     qDebug() << lfm;
 

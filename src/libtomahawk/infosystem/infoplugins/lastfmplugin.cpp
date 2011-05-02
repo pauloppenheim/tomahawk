@@ -158,6 +158,7 @@ LastFmPlugin::pushInfo( const QString caller, const Tomahawk::InfoSystem::InfoTy
 void
 LastFmPlugin::nowPlaying( const QString &caller, const InfoType type, const QVariant &input )
 {
+    qDebug() << Q_FUNC_INFO;
     if ( !input.canConvert< Tomahawk::InfoSystem::InfoCriteriaHash >() || !m_scrobbler )
         return;
 
@@ -182,7 +183,7 @@ LastFmPlugin::nowPlaying( const QString &caller, const InfoType type, const QVar
 void
 LastFmPlugin::scrobble( const QString &caller, const InfoType type, const QVariant &input )
 {
-    Q_ASSERT( QThread::currentThread() == thread() );
+    //Q_ASSERT( QThread::currentThread() == thread() );
 
     if ( !m_scrobbler || m_track.isNull() )
         return;
@@ -473,6 +474,6 @@ LastFmPlugin::createScrobbler()
         lastfm::ws::SessionKey = TomahawkSettings::instance()->lastFmSessionKey();
 
         m_scrobbler = new lastfm::Audioscrobbler( "thk" );
-        m_scrobbler->moveToThread( thread() );
+        //m_scrobbler->moveToThread( thread() );
     }
 }

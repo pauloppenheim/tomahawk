@@ -108,7 +108,8 @@ lastfm::ws::get( QMap<QString, QString> params )
 
 QNetworkReply*
 lastfm::ws::post( QMap<QString, QString> params, bool sk )
-{   
+{
+    qDebug() << Q_FUNC_INFO;
     sign( params, sk ); 
     QByteArray query;
     QMapIterator<QString, QString> i( params );
@@ -120,6 +121,7 @@ lastfm::ws::post( QMap<QString, QString> params, bool sk )
                + '&';
     }
 
+    qDebug() << "posting query " << query << " to url " << url();
     return nam()->post( QNetworkRequest(url()), query );
 }
 
