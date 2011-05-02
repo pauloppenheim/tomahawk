@@ -121,7 +121,7 @@ lastfm::ws::post( QMap<QString, QString> params, bool sk )
                + '&';
     }
 
-    qDebug() << "posting query " << query << " to url " << url();
+    qDebug() << "posting query " << query << " to url " << url() << " with nam " << nam();
     return nam()->post( QNetworkRequest(url()), query );
 }
 
@@ -198,10 +198,12 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
 QNetworkAccessManager*
 lastfm::nam()
 {
+    qDebug() << Q_FUNC_INFO;
     QMutexLocker l( &namAccessMutex );
     QThread* thread = QThread::currentThread();
     if ( !threadNamHash.contains( thread ) )
     {
+        qDebug() << "lastfm::nam: Creating our own nam";
         NetworkAccessManager* newNam = new NetworkAccessManager();
         threadNamHash[thread] = newNam;
         ourNamHash[thread] = true;
@@ -215,16 +217,21 @@ lastfm::nam()
 void
 lastfm::setNetworkAccessManager( QNetworkAccessManager* nam )
 {
+    qDebug() << Q_FUNC_INFO;
     if ( !nam )
         return;
 
     QMutexLocker l( &namAccessMutex );
     QThread* thread = QThread::currentThread();
+    QNetworkAccessManager* oldNam = 0;
     if ( threadNamHash.contains( thread ) && ourNamHash.contains( thread ) && ourNamHash[thread] )
-        delete threadNamHash[thread];
+        oldNam = threadNamHash[thread];
     
     threadNamHash[thread] = nam;
     ourNamHash[thread] = false;
+    
+    if ( oldNam )
+        delete oldNam;
 }
 
 
