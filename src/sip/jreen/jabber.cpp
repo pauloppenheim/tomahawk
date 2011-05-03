@@ -122,7 +122,6 @@ JabberPlugin::setProxy( const QNetworkProxy &proxy )
     {
         // patches are welcome in Jreen that implement jdns through proxy
         qDebug() << Q_FUNC_INFO << "Jreen proxy only works when you explicitly set host and port";
-        Q_ASSERT(false);
         return;
     }
 
