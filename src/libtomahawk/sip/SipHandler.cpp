@@ -229,7 +229,10 @@ SipHandler::connectPlugins( bool startup, const QString &pluginName )
     foreach( SipPlugin* sip, m_plugins )
     {
         if ( pluginName.isEmpty() || ( !pluginName.isEmpty() && sip->name() == pluginName ) )
+        {
+            sip->setProxy( m_proxy );
             sip->connectPlugin( startup );
+        }
     }
 
     if ( pluginName.isEmpty() )
@@ -263,6 +266,19 @@ SipHandler::toggleConnect()
         disconnectPlugins();
     else
         connectPlugins();
+}
+
+void
+SipHandler::setProxy( const QNetworkProxy& proxy )
+{
+    qDebug() << Q_FUNC_INFO;
+
+    m_proxy = proxy;
+
+    foreach( SipPlugin* sip, m_plugins )
+    {
+        sip->setProxy( proxy );
+    }
 }
 
 

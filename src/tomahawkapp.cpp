@@ -506,7 +506,7 @@ TomahawkApp::setupSIP()
 
         qDebug() << "Connecting SIP classes";
         m_sipHandler->connectPlugins( true );
-//        m_sipHandler->setProxy( *TomahawkUtils::proxy() );
+        m_sipHandler->setProxy( *TomahawkUtils::proxy() );
 
     }
 }

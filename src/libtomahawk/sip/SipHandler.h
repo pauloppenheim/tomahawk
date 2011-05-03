@@ -50,6 +50,8 @@ public slots:
     void disconnectPlugins( const QString &pluginName = QString() );
     void toggleConnect();
 
+    void setProxy( const QNetworkProxy &proxy );
+
 signals:
     void connected();
     void disconnected();
@@ -81,6 +83,7 @@ private:
 
     QList< SipPlugin* > m_plugins;
     bool m_connected;
+    QNetworkProxy m_proxy;
 
 
     QHash<QString, QPixmap> m_usernameAvatars;
