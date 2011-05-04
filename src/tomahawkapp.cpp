@@ -178,9 +178,32 @@ TomahawkApp::init()
 
     registerMetaTypes();
 
+    new TomahawkSettings( this );
+    
+#ifdef LIBLASTFM_FOUND
+    qDebug() << "Setting NAM.";
+    TomahawkUtils::setNam( lastfm::nam() );
+#else
+    qDebug() << "Setting NAM.";
+    TomahawkUtils::setNam( new QNetworkAccessManager() );
+#endif
+
+    // Set up proxy
+    //FIXME: This overrides the lastfm proxy above?
+    if( TomahawkSettings::instance()->proxyType() != QNetworkProxy::NoProxy &&
+        !TomahawkSettings::instance()->proxyHost().isEmpty() )
+    {
+        qDebug() << "Setting proxy to saved values";
+        TomahawkUtils::setProxy( new QNetworkProxy( static_cast<QNetworkProxy::ProxyType>(TomahawkSettings::instance()->proxyType()), TomahawkSettings::instance()->proxyHost(), TomahawkSettings::instance()->proxyPort(), TomahawkSettings::instance()->proxyUsername(), TomahawkSettings::instance()->proxyPassword() ) );
+        qDebug() << "Proxy type =" << QString::number( static_cast<int>(TomahawkUtils::proxy()->type()) );
+        qDebug() << "Proxy host =" << TomahawkUtils::proxy()->hostName();
+        TomahawkUtils::nam()->setProxy( *TomahawkUtils::proxy() );
+    }
+    else
+        TomahawkUtils::setProxy( new QNetworkProxy( QNetworkProxy::NoProxy ) );
+    
     Echonest::Config::instance()->setAPIKey( "JRIHWEP6GPOER2QQ6" );
 
-    new TomahawkSettings( this );
     m_audioEngine = new AudioEngine;
     m_scanManager = new ScanManager( this );
     new Pipeline( this );
@@ -218,39 +241,12 @@ TomahawkApp::init()
     qDebug() << "Init InfoSystem.";
     m_infoSystem = new Tomahawk::InfoSystem::InfoSystem( this );
 
-#ifdef LIBLASTFM_FOUND
-    qDebug() << "Init Scrobbler.";
-    m_scrobbler = new Scrobbler( this );
-    qDebug() << "Setting NAM.";
-    TomahawkUtils::setNam( lastfm::nam() );
-
-#else
-    qDebug() << "Setting NAM.";
-    TomahawkUtils::setNam( new QNetworkAccessManager() );
-#endif
-
-    // Set up proxy
-    //FIXME: This overrides the lastfm proxy above?
-    if( TomahawkSettings::instance()->proxyType() != QNetworkProxy::NoProxy &&
-        !TomahawkSettings::instance()->proxyHost().isEmpty() )
-    {
-        qDebug() << "Setting proxy to saved values";
-        TomahawkUtils::setProxy( new QNetworkProxy( static_cast<QNetworkProxy::ProxyType>(TomahawkSettings::instance()->proxyType()), TomahawkSettings::instance()->proxyHost(), TomahawkSettings::instance()->proxyPort(), TomahawkSettings::instance()->proxyUsername(), TomahawkSettings::instance()->proxyPassword() ) );
-        qDebug() << "Proxy type =" << QString::number( static_cast<int>(TomahawkUtils::proxy()->type()) );
-        qDebug() << "Proxy host =" << TomahawkUtils::proxy()->hostName();
-        TomahawkUtils::nam()->setProxy( *TomahawkUtils::proxy() );
-        lastfm::nam()->setProxy( *TomahawkUtils::proxy() );
-    }
-    else
-        TomahawkUtils::setProxy( new QNetworkProxy( QNetworkProxy::NoProxy ) );
-
     Echonest::Config::instance()->setAPIKey( "JRIHWEP6GPOER2QQ6" );
     Echonest::Config::instance()->setNetworkAccessManager( TomahawkUtils::nam() );
 
     QNetworkProxy::setApplicationProxy( *TomahawkUtils::proxy() );
 
     qDebug() << "Init SIP system.";
-    m_sipHandler = new SipHandler( this );
 
 #ifndef TOMAHAWK_HEADLESS
     if ( !m_headless )
@@ -280,6 +276,11 @@ TomahawkApp::init()
     {
         m_mainwindow->showSettingsDialog();
     }
+#endif
+
+#ifdef LIBLASTFM_FOUND
+    qDebug() << "Init Scrobbler.";
+    m_scrobbler = new Scrobbler( this );
 #endif
 }
 
@@ -320,6 +321,12 @@ TomahawkApp::audioControls()
     return m_mainwindow->audioControls();
 }
 #endif
+
+SipHandler*
+TomahawkApp::sipHandler()
+{
+    return SipHandler::instance();
+}
 
 void
 TomahawkApp::registerMetaTypes()
@@ -373,6 +380,7 @@ TomahawkApp::registerMetaTypes()
     qRegisterMetaType< QHash< QString, QVariant > >( "Tomahawk::InfoSystem::InfoCustomData" );
     qRegisterMetaType< QHash< QString, QString > >( "Tomahawk::InfoSystem::InfoCriteriaHash" );
     qRegisterMetaType< Tomahawk::InfoSystem::InfoType >( "Tomahawk::InfoSystem::InfoType" );
+    qRegisterMetaType< QWeakPointer< Tomahawk::InfoSystem::InfoSystemCache > >( "QWeakPointer< Tomahawk::InfoSystem::InfoSystemCache >" );
 }
 
 
@@ -498,16 +506,15 @@ TomahawkApp::setupSIP()
     qDebug() << Q_FUNC_INFO;
 
     //FIXME: jabber autoconnect is really more, now that there is sip -- should be renamed and/or split out of jabber-specific settings
-    if( !arguments().contains( "--nosip" ) && TomahawkSettings::instance()->jabberAutoConnect() )
+    if( !arguments().contains( "--nosip" ) )
     {
 #ifdef GLOOX_FOUND
         m_xmppBot = new XMPPBot( this );
 #endif
 
         qDebug() << "Connecting SIP classes";
-        m_sipHandler->connectPlugins( true );
-        m_sipHandler->setProxy( *TomahawkUtils::proxy() );
-
+        SipHandler::instance()->setProxy( *TomahawkUtils::proxy() );
+        SipHandler::instance()->loadFromConfig( true );
     }
 }
 
