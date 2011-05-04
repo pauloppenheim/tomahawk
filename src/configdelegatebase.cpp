@@ -26,7 +26,6 @@
 
 ConfigDelegateBase::ConfigDelegateBase ( QObject* parent )
     : QStyledItemDelegate ( parent )
-    , m_configPressed( false )
 {
 
 }
@@ -58,7 +57,6 @@ ConfigDelegateBase::sizeHint( const QStyleOptionViewItem& option, const QModelIn
 void
 ConfigDelegateBase::drawCheckBox( QStyleOptionViewItemV4& opt, QPainter* p, const QWidget* w ) const
 {
-    m_checkRect = opt.rect;
     QStyle* style = w ? w->style() : QApplication::style();
     opt.checkState == Qt::Checked ? opt.state |= QStyle::State_On : opt.state |= QStyle::State_Off;
     style->drawPrimitive( QStyle::PE_IndicatorViewItemCheck, &opt, p, w );
@@ -78,8 +76,9 @@ ConfigDelegateBase::drawConfigWrench ( QPainter* painter, QStyleOptionViewItemV4
     topt.subControls = QStyle::SC_ToolButton;
     topt.activeSubControls = QStyle::SC_None;
     topt.features = QStyleOptionToolButton::None;
-    topt.state = m_configPressed ? QStyle::State_On : QStyle::State_Raised;
-    if( opt.state & QStyle::State_MouseOver || m_configPressed )
+    bool pressed = ( m_configPressed == opt.index );
+    topt.state = pressed ? QStyle::State_On : QStyle::State_Raised;
+    if( opt.state & QStyle::State_MouseOver || pressed )
         topt.state |= QStyle::State_HasFocus;
     style->drawComplexControl( QStyle::CC_ToolButton, &topt, painter, w );
 }
@@ -91,10 +90,10 @@ ConfigDelegateBase::editorEvent ( QEvent* event, QAbstractItemModel* model, cons
     initStyleOption( &viewOpt, index );
 
     if( event->type() == QEvent::MouseButtonRelease || event->type() == QEvent::MouseButtonDblClick ) {
-        m_configPressed = false;
+        m_configPressed = QModelIndex();
 
         QMouseEvent* me = static_cast< QMouseEvent* >( event );
-        if( me->button() != Qt::LeftButton || !m_checkRect.contains( me->pos() ) )
+        if( me->button() != Qt::LeftButton || !checkRectForIndex( option, index ).contains( me->pos() ) )
             return false;
 
         // eat the double click events inside the check rect
@@ -109,7 +108,7 @@ ConfigDelegateBase::editorEvent ( QEvent* event, QAbstractItemModel* model, cons
     } else if( event->type() == QEvent::MouseButtonPress ) {
         QMouseEvent* me = static_cast< QMouseEvent* >( event );
         if( me->button() == Qt::LeftButton && configRectForIndex( option, index ).contains( me->pos() ) ) {
-            m_configPressed = true;
+            m_configPressed = index;
 
             emit configPressed( index );
             return true;
