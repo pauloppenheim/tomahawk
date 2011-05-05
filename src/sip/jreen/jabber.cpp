@@ -216,7 +216,7 @@ JabberPlugin::connectPlugin( bool startup )
     qDebug() << m_client->server() << m_client->port();
 
     //FIXME: we're badly workarounding some missing reconnection api here, to be fixed soon
-    QTimer::singleShot(1000, m_client, SLOT( connectToServer() ) );
+    QTimer::singleShot( 1000, m_client, SLOT( connectToServer() ) );
 
 
     m_state = Connecting;
@@ -227,8 +227,15 @@ JabberPlugin::connectPlugin( bool startup )
 void
 JabberPlugin::disconnectPlugin()
 {
-    if(!m_client->isConnected())
+    if (!m_client->isConnected())
+    {
+        if ( m_state != Disconnected ) // might be Connecting
+        {
+           m_state = Disconnected;
+           emit stateChanged( m_state );
+        }
         return;
+    }
 
     foreach(const Jreen::JID &peer, m_peers.keys())
     {
@@ -325,7 +332,8 @@ JabberPlugin::onDisconnect( Jreen::Client::DisconnectReason reason )
     removeMenuHelper();
 }
 
-QString JabberPlugin::errorMessage(Jreen::Client::DisconnectReason reason)
+QString
+JabberPlugin::errorMessage( Jreen::Client::DisconnectReason reason )
 {
     switch( reason )
     {
@@ -366,6 +374,9 @@ QString JabberPlugin::errorMessage(Jreen::Client::DisconnectReason reason)
             Q_ASSERT(false);
             break;
     }
+
+    m_state = Disconnected;
+    emit stateChanged( m_state );
 
     return QString();
 }
