@@ -51,6 +51,8 @@ public:
     SipPluginFactory* factoryFromPlugin( SipPlugin* p ) const;
 
     const QPixmap avatar( const QString& name ) const;
+    //TODO: implement a proper SipInfo class and maybe attach it to the source
+    const QVariantMap sipInfo( const QString& peerId ) const;
 
 public slots:
     void checkSettings();
@@ -118,7 +120,8 @@ private:
     bool m_connected;
     QNetworkProxy m_proxy;
 
-
+    //TODO: move this to source
+    QHash<QString, QVariantMap> m_peersSipInfos;
     QHash<QString, QPixmap> m_usernameAvatars;
 };
 
